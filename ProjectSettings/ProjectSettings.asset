@@ -929,11 +929,11 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 05ab9917-5af3-4f7a-a497-95edd8c50fef
+  cloudProjectId: f5d5d884-a2f1-48c8-837f-0204746290d5
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: PhoniTruck
-  organizationId: huskywhitety85
+  projectName: PhoniTruck_Capstone2_Project
+  organizationId: reyes132793mtdrptsk
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
