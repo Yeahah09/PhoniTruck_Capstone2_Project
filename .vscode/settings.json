@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "PhoniTruck_v2.slnx"
+    "dotnet.defaultSolution": "PhoniTruck_Capstone2_Project.slnx"
 }

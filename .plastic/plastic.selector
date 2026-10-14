@@ -1,4 +1,0 @@
-repository "3d World/PhoniTruck@18967838012241@cloud"
-  path "/"
-    br "/main"
-    co "/main"
