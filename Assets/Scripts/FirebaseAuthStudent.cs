@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Firebase;
 using Firebase.Auth;
 using Firebase.Database;
@@ -10,27 +11,29 @@ public class FirebaseAuthStudent : MonoBehaviour
 {
     [Header("Student UI Elements")]
     public TMP_InputField studentNameInput;
-    public TMP_Dropdown teacherDropdown;   // Dropdown to select teacher
+    public TMP_Dropdown teacherDropdown;
     public TMP_Text statusText;
 
     [Header("Game Panels")]
-    public GameObject studentPanel;        // panel with name + teacher selection
-    public GameObject difficultyPanel;     // panel for difficulty selection
+    public GameObject studentPanel;
+    public GameObject difficultyPanel;
 
     private FirebaseAuth auth;
     private DatabaseReference dbRef;
 
-    // Mapping dropdown index → teacher UID
     private Dictionary<int, string> teacherUidMap = new Dictionary<int, string>();
+
+    // Store the logged-in student key globally
+    public static string LoggedInStudentKey;
 
     void Start()
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+        {
             if (task.Result == DependencyStatus.Available)
             {
                 auth = FirebaseAuth.DefaultInstance;
                 dbRef = FirebaseDatabase.DefaultInstance.RootReference;
-
                 LoadTeachersIntoDropdown();
             }
             else
@@ -40,17 +43,17 @@ public class FirebaseAuthStudent : MonoBehaviour
         });
     }
 
-    // Load teachers from DB into dropdown
     private void LoadTeachersIntoDropdown()
     {
-        dbRef.Child("users").Child("teachers").GetValueAsync().ContinueWithOnMainThread(task => {
-            if (task.IsFaulted || task.IsCanceled)
+        dbRef.Child("users").Child("teachers").ValueChanged += (sender, args) =>
+        {
+            if (args.DatabaseError != null)
             {
-                statusText.text = "Error loading teachers: " + task.Exception;
+                statusText.text = "Error loading teachers: " + args.DatabaseError.Message;
                 return;
             }
 
-            DataSnapshot snapshot = task.Result;
+            DataSnapshot snapshot = args.Snapshot;
             teacherDropdown.ClearOptions();
             teacherUidMap.Clear();
 
@@ -59,10 +62,9 @@ public class FirebaseAuthStudent : MonoBehaviour
 
             foreach (var child in snapshot.Children)
             {
-                // Only show teachers that are linked to an admin
                 if (child.Child("admin").Value != null && !string.IsNullOrEmpty(child.Child("admin").Value.ToString()))
                 {
-                    string teacherName = child.Child("name").Value != null ? child.Child("name").Value.ToString() : "Unnamed Teacher";
+                    string teacherName = child.Child("name").Value?.ToString() ?? "Unnamed Teacher";
                     string teacherUid = child.Key;
 
                     teacherList.Add(teacherName);
@@ -80,7 +82,7 @@ public class FirebaseAuthStudent : MonoBehaviour
             {
                 statusText.text = "No teachers available.";
             }
-        });
+        };
     }
 
     // Student joins under a teacher
@@ -103,20 +105,62 @@ public class FirebaseAuthStudent : MonoBehaviour
         int selectedIndex = teacherDropdown.value;
         string teacherUid = teacherUidMap[selectedIndex];
 
-        // Create student profile with score = 0
-        StudentProfileData studentData = new StudentProfileData(studentName, "Student", teacherUid, 0);
-        string json = JsonUtility.ToJson(studentData);
+        dbRef.Child("users").Child("students").GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                statusText.text = "Error checking students: " + task.Exception;
+                return;
+            }
 
-        // Generate a unique key for student (push ID)
-        string studentKey = dbRef.Child("users").Child("students").Push().Key;
-        dbRef.Child("users").Child("students").Child(studentKey).SetRawJsonValueAsync(json);
+            DataSnapshot snapshot = task.Result;
+            string existingKey = null;
 
-        statusText.text = "Student joined under teacher successfully!";
-        studentNameInput.text = "";
+            foreach (var child in snapshot.Children)
+            {
+                string existingName = child.Child("name").Value?.ToString();
+                string existingTeacher = child.Child("teacher").Value?.ToString();
 
-        // Switch panels: hide student panel, show difficulty panel
-        if (studentPanel != null) studentPanel.SetActive(false);
-        if (difficultyPanel != null) difficultyPanel.SetActive(true);
+                if (existingName == studentName && existingTeacher == teacherUid)
+                {
+                    existingKey = child.Key;
+                    break;
+                }
+            }
+
+            if (existingKey != null)
+            {
+                // ✅ Student already exists → reuse
+                LoggedInStudentKey = existingKey;
+                statusText.text = "Welcome back, " + studentName + "!";
+            }
+            else
+            {
+                // ➕ Create new student profile with difficulty fields
+                var studentData = new Dictionary<string, object>
+                {
+                    { "name", studentName },
+                    { "role", "Student" },
+                    { "teacher", teacherUid },
+                    { "score", 0 },
+                    { "easyPoints", 0 },
+                    { "mediumPoints", 0 },
+                    { "hardPoints", 0 },
+                    { "difficulty", "" }
+                };
+
+                string studentKey = dbRef.Child("users").Child("students").Push().Key;
+                dbRef.Child("users").Child("students").Child(studentKey).SetValueAsync(studentData);
+
+                LoggedInStudentKey = studentKey;
+                statusText.text = "Student joined under teacher successfully!";
+                studentNameInput.text = "";
+            }
+
+            // Go to Screen
+            PlayerPrefs.SetString("NextScene", "Main Game");
+            SceneManager.LoadScene("LoadingScreen");
+        });
     }
 
     // Update student score

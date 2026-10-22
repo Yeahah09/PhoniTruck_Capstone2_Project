@@ -9,9 +9,8 @@ public class Cloud_Text : MonoBehaviour
 
     private void Start()
     {
-        promptManager = FindFirstObjectByType<PixelPromptManager>();
+        promptManager = FindAnyObjectByType<PixelPromptManager>();
 
-        // This prompt starts hidden
         if (prompt != null)
         {
             prompt.SetActive(false);
@@ -23,7 +22,11 @@ public class Cloud_Text : MonoBehaviour
         if (promptManager != null && prompt != null)
         {
             promptManager.ShowPrompt(prompt);
-            letterSound.Play();
+
+            if (letterSound != null)
+            {
+                letterSound.Play();
+            }
         }
     }
 }
