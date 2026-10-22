@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4641524233620874769}
   - component: {fileID: 682461685551365783}
   - component: {fileID: 1508028814291473109}
+  - component: {fileID: 3318528944902377066}
   m_Layer: 0
   m_Name: Cloud 1
   m_TagString: Untagged
@@ -18,21 +19,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4641524233620874769
-Transform:
+--- !u!224 &4641524233620874769
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2150931604935063542}
-  serializedVersion: 2
   m_LocalRotation: {x: 0.15491931, y: 0.13713527, z: -0.021720096, w: 0.9781218}
-  m_LocalPosition: {x: 1.587, y: 3.027, z: 2.987}
+  m_LocalPosition: {x: 0, y: 0, z: 2.987}
   m_LocalScale: {x: 5.132424, y: 4.6745405, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 18, y: 15.962, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1.587, y: 3.027}
+  m_SizeDelta: {x: 0.32, y: 0.32}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &682461685551365783
 SpriteRenderer:
   serializedVersion: 3
@@ -115,3 +120,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3318528944902377066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2150931604935063542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2f60660315447141ad4fdb49c15c774, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DraggablePhonic
+  phonicLetter: 

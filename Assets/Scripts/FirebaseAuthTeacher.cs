@@ -173,14 +173,46 @@ public class FirebaseAuthTeacher : MonoBehaviour
                 {
                     if (child.Child("teacher").Value.ToString() == teacherUid)
                     {
-                        string studentName = child.Child("name").Value.ToString();
-                        int score = int.Parse(child.Child("score").Value.ToString());
-                        studentLines.Add(studentName + " - Score: " + score);
+                        string studentName = child.Child("name").Value?.ToString() ?? "Unknown";
+
+                        // Read values safely
+                        int score = int.TryParse(child.Child("score").Value?.ToString(), out var s) ? s : 0;
+
+                        int easyPoints = int.TryParse(child.Child("easyPoints").Value?.ToString(), out var ep) ? ep : 0;
+                        int easyCorrect = int.TryParse(child.Child("easyCorrect").Value?.ToString(), out var ec) ? ec : 0;
+                        int easyWrong = int.TryParse(child.Child("easyWrong").Value?.ToString(), out var ew) ? ew : 0;
+
+                        int mediumPoints = int.TryParse(child.Child("mediumPoints").Value?.ToString(), out var mp) ? mp : 0;
+                        int mediumCorrect = int.TryParse(child.Child("mediumCorrect").Value?.ToString(), out var mc) ? mc : 0;
+                        int mediumWrong = int.TryParse(child.Child("mediumWrong").Value?.ToString(), out var mw) ? mw : 0;
+
+                        int hardPoints = int.TryParse(child.Child("hardPoints").Value?.ToString(), out var hp) ? hp : 0;
+                        int hardCorrect = int.TryParse(child.Child("hardCorrect").Value?.ToString(), out var hc) ? hc : 0;
+                        int hardWrong = int.TryParse(child.Child("hardWrong").Value?.ToString(), out var hw) ? hw : 0;
+
+                        // Calculate percentages
+                        int easyTotal = easyCorrect + easyWrong;
+                        int mediumTotal = mediumCorrect + mediumWrong;
+                        int hardTotal = hardCorrect + hardWrong;
+
+                        string easyPercent = easyTotal > 0 ? (easyCorrect * 100 / easyTotal).ToString() + "%" : "0%";
+                        string mediumPercent = mediumTotal > 0 ? (mediumCorrect * 100 / mediumTotal).ToString() + "%" : "0%";
+                        string hardPercent = hardTotal > 0 ? (hardCorrect * 100 / hardTotal).ToString() + "%" : "0%";
+
+                        // Build display line
+                        string line =
+                            $"{studentName} - Total: {score}\n" +
+                            $"   Easy: {easyPoints} (Correct {easyCorrect} Wrong {easyWrong}, {easyPercent})\n" +
+                            $"   Medium: {mediumPoints} (Correct {mediumCorrect} Wrong {mediumWrong}, {mediumPercent})\n" +
+                            $"   Hard: {hardPoints} (Correct {hardCorrect} Wrong {hardWrong}, {hardPercent})";
+
+                        studentLines.Add(line);
                     }
                 }
 
-                studentsAndScoresText.text = "Students and Scores:\n" + string.Join("\n", studentLines);
+                studentsAndScoresText.text = "Students and Scores:\n" + string.Join("\n\n", studentLines);
             }
         });
     }
+
 }

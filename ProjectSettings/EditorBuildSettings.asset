@@ -5,8 +5,8 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
+  - enabled: 1
+    path: Assets/Scenes/LoadingScreen.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 0
     path: Assets/Scenes/Game Main Menu.unity
@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Login Account.unity
     guid: 74ea69ae3a354da4f92cd915bc2ddfe1
   - enabled: 1
-    path: Assets/Scenes/GameMainMenu.unity
+    path: Assets/Scenes/Old/GameMainMenuOld.unity
     guid: 1b33d0dda0322b64dadbf50e93f026f6
   - enabled: 1
     path: Assets/PhoniTruck/Main Game/Main Game.unity
